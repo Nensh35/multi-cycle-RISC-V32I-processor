@@ -24,7 +24,7 @@ always @(*) begin
         4'd11: ALU_out = (A < B ) ? 1:0 ;
         4'd12: flag    = (A >= B) ? 1:0 ;
         4'd13: flag    = (A < B ) ? 1:0 ;
-        4'd14: ALU_out = $signed(A) >>> B ;  //SR but arithmatic not logical nagative will be -ve only ;;
+        4'd14: ALU_out = $signed(A) >>> B ; 
 
         default : begin ALU_out = 32'bx ; flag = 1'bx ; end
 
