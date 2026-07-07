@@ -44,7 +44,7 @@ Base Opcode: 0110011
 =======================================================
 
 [2] I-Type Instructions (Immediate Math & Logic)
-Format: Imm[11:0](12) | Rs1(5) | Funct3(3) | Rd(5) | Opcode(7)
+Format: Imm[11:0] | Rs1(5) | Funct3(3) | Rd(5) | Opcode(7)
 Base Opcode: 0010011
 
 =======================================================
@@ -60,7 +60,7 @@ Base Opcode: 0010011
 =======================================================
 
 [3] I-Type Instructions (Memory Loads)
-Format: Imm[11:0](12) | Rs1(5) | Funct3(3) | Rd(5) | Opcode(7)
+Format: Imm[11:0] | Rs1(5) | Funct3(3) | Rd(5) | Opcode(7)
 Base Opcode: 0000011
 
 =======================================================
@@ -74,7 +74,7 @@ Base Opcode: 0000011
 =======================================================
 
 [4] S-Type Instructions (Memory Stores)
-Format: Imm[11:5](7) | Rs2(5) | Rs1(5) | Funct3(3) | Imm[4:0](5) | Opcode(7)
+Format: Imm[11:5] | Rs2(5) | Rs1(5) | Funct3(3) | Imm[4:0] | Opcode(7)
 Base Opcode: 0100011
 
 =======================================================
@@ -86,7 +86,7 @@ Base Opcode: 0100011
 =======================================================
 
 [5] B-Type Instructions (Branches)
-Format: Imm[12|10:5] | Rs2(5) | Rs1(5) | Funct3(3) | Imm[4:1|11] | Opcode(7)
+Format: Imm[11:5] | Rs2(5) | Rs1(5) | Funct3(3) | Imm[4:0] | Opcode(7)
 Base Opcode: 1100011
 
 =======================================================
