@@ -22,23 +22,7 @@ The processor is governed by a central FSM Controller.v which dictates the flow 
 📜 Supported Instruction Set (RV32I)
 The processor supports the 6 core RISC-V instruction formats.
 
-bit postion :
-
-  31  25      24 20      19 15       14 12       11 7         6  0          instruction type:
-  funct7       rs2       rs1       funct3         rd         opcode             R-type
-
-  imm[11:0]              rs1       funct3         rd         opcode             I-type
-
-  imm[11:5]    rs2       rs1       funct3       imm[4:0]     opcode             S-type
-  
-  imm[11:5]    rs2       rs1       funct3       imm[4:0]     opcode             B-type
-
-  imm[31:12]                                       rd        opcode             U-type
-  
-  imm[31:12]                                       rd        opcode             J-type
-
-
-### 2. Implemented Instructions & Opcodes (RV32I Base)
+Implemented Instructions & Opcodes (RV32I Base)
 
 
 [1] R-Type Instructions (Register Math & Logic)
