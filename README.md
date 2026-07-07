@@ -129,7 +129,7 @@ ALU.v (Arithmetic Logic Unit): The mathematical core. Utilizes a 4-bit select li
 
 Data_Memory.v / DM.v (Data RAM): Byte-addressable read/write memory. It utilizes ternary operators and bit-slicing to output proper word, halfword, and byte lengths, applying zeros or sign-bits depending on the specific load instruction.
 
-tb.v (Testbench): Contains bare-metal machine code arrays injected into Instruction Memory to verify mathematical loops (e.g., Factorial calculation, Fibonacci sequences).
+tb.v (Testbench): Contains bare-metal machine code arrays injected into Instruction Memory to verify mathematical loops (e.g., Factorial calculation).
 
 
 simulation tool used is icarus verilog & GTK wave 
