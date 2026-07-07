@@ -1,0 +1,125 @@
+ //hear all are code for test bench
+ 
+
+
+//// To verify the all type of instruction ::
+
+          
+//
+//        p.DM.mem[30] = 250 ;
+//        for(i = 1 ; i < 32 ; i= i+1)
+//            p.R.R[i] = i ;
+//
+//
+//        // p.im.imem[0] = {12'd20 , 5'd10 , 3'b0 , 5'd5 , 7'b0010011  } ;  // addi
+//        // p.im.imem[0] = {12'd10 , 5'd10 , 3'b0 , 5'd2 , 7'b0010011  } ;  //addi
+//
+//        // p.im.imem[1] = {7'h20  , 5'd2  , 5'd5 , 3'b0 , 5'd4 ,7'b0110011 }; //sub
+//        
+//        // p.im.imem[0] = {12'd20 , 5'd10 , 3'b10 , 5'd5 , 7'b0000011  } ;  // Load I
+//
+//        // p.im.imem[0] = {7'h02  , 5'd8  , 5'd0 , 3'd2 , 5'd2 ,7'b0100011 };  // store 32 bit
+//        
+//        // p.im.imem[0] = {7'h00  , 5'd1  , 5'd1 , 3'd0 , 5'd4 ,7'b1100011 };   //Branch type B
+//        // p.im.imem[5] = {12'd20 , 5'd10 , 3'b0 , 5'd5 , 7'b0010011  } ;
+//        // p.im.imem[6] = {12'd50 , 5'd10 , 3'b0 , 5'd5 , 7'b0010011  } ;
+//
+//        // p.im.imem[0] = {20'd5 ,  5'd10 , 7'b1101111} ;                       //JAL J type
+//        // p.im.imem[5] = {12'd20 , 5'd10 , 3'b0 , 5'd5 , 7'b0010011  } ;
+//        // p.im.imem[6] = {12'd50 , 5'd20 , 3'b0 , 5'd5 , 7'b0010011  } ;
+//
+//
+//        // p.im.imem[0] = {12'd20  , 5'd5  , 3'b0 , 5'd5 , 7'b1100111   } ;  /// J-I type
+//        // p.im.imem[25] ={12'd50  , 5'd10 , 3'b0 , 5'd15 , 7'b0010011  } ;
+//
+//        // p.im.imem[0] = {20'd1 ,  5'd5 , 7'b0110111} ;       ///  U type Lui ;
+//
+//        // p.im.imem[0] = {20'd1 ,  5'd5 , 7'b0010111} ;        // U  auipc ;
+//
+//        $display("the final output in the reg no  %d is %d " , 5 ,p.R.R[5]); 
+//        $display("the final output in the reg no  %d is %d " , 2 ,p.R.R[15]); 
+
+
+        //now a multipication code    like 8*5
+        //        p.R.R[1] = 32'd81;
+        //p.R.R[2] = 32'd88;
+        //p.R.R[3] = 32'd1;
+        //p.R.R[20]= 32'd0;
+        //
+//
+        //p.im.imem[0] = {7'h0   , 5'd1  , 5'd20 , 3'b0  , 5'd20 , 7'b0110011  } ; 
+        //p.im.imem[1] = {7'h20  , 5'd3  , 5'd2  , 3'b0  , 5'd2  , 7'b0110011 };   
+        //p.im.imem[2] = {7'h0   , 5'd2  , 5'd0  , 3'd4  , 5'd0  , 7'b1100011 }; 
+
+
+
+//        ///  hear is code for factorial calculation:
+//
+//        // input is taken in the reg 1 :  
+//        p.R.R[1] = 32'd13;
+//
+//
+//        p.R.R[21]= 32'd1;
+//        p.R.R[22] = 32'd2;
+//
+//        // step one store that variable in the 3 more register hear it is 3 and 2 & 4
+//        // 2 is for multipication , and 3 is for second loop condition  and 4 for the addition conttantly  :
+//
+//        p.im.imem[0] = {7'h0   , 5'd1  , 5'd0 , 3'b0  , 5'd2 , 7'b0110011  } ;   //   copy to reg2         
+//        p.im.imem[1] = {7'h0   , 5'd1  , 5'd0 , 3'b0  , 5'd3 , 7'b0110011  } ;   //   copy to reg3
+//        p.im.imem[2] = {7'h0   , 5'd1  , 5'd0 , 3'b0  , 5'd4 , 7'b0110011  } ;   //   copy to reg4
+//        p.im.imem[3] = {7'h20  , 5'd21  , 5'd2  , 3'b0  , 5'd2  , 7'b0110011 };  //   reg2  - 1
+//        p.im.imem[4] = {7'h20  , 5'd22  , 5'd3  , 3'b0  , 5'd3  , 7'b0110011 };  //   reg3  - 2
+//
+//        //step 2 is multipication of reg 1 and 2 :      
+//
+//        p.im.imem[5] = {7'h0   , 5'd1  , 5'd4 , 3'b0  , 5'd1 , 7'b0110011  }  ;  //     add reg1  + reg4  
+//        p.im.imem[6] = {7'h20  , 5'd21  , 5'd2  , 3'b0  , 5'd2  , 7'b0110011 };  //     sub reg2  - 1
+//        p.im.imem[7] = {7'h0   , 5'd2  , 5'd21  , 3'd4  , 5'd5  , 7'b1100011 };  //   branch if reg2 > 1 to the im[5];
+//
+//        //step 3 copy that reg 3 to 2 ;     
+//
+//        p.im.imem[8] = {7'h0   , 5'd3  , 5'd0 , 3'b0  , 5'd2 , 7'b0110011  } ;   //  copy reg3 in the reg2
+//        p.im.imem[9] = {7'h20  , 5'd21  , 5'd3  , 3'b0  , 5'd3  , 7'b0110011 };  //  sub  reg3  - 1 ; 
+//        p.im.imem[10] = {7'h0   , 5'd1  , 5'd0 , 3'b0  , 5'd4 , 7'b0110011  } ;  //  copy reg1 in the reg 4
+//        p.im.imem[11] = {7'h0   , 5'd3  , 5'd0  , 3'd4  , 5'd5  , 7'b1100011 };  //  branch if reg3 > 0 to the imem[5];
+//
+//        p.im.imem[12] = {7'h0   , 5'd28  , 5'd0 , 3'b0  , 5'd25 , 7'b0110011  } ;
+//
+//
+//
+//
+//    #17000
+//            $display("the final output in the reg no  %d is %d " , 1 ,p.R.R[1]); 
+//            $display("the final output in the reg no  %d is %d " , 2 ,p.R.R[2]); 
+//            $display("the final output in the reg no  %d is %d " , 3 ,p.R.R[3]);
+//            $display("the final output in the reg no  %d is %d " , 4 ,p.R.R[4]);
+//            $display("the final output in the reg no  %d is %d " , 4 ,p.R.R[25]);
+
+
+
+                // for that tyring to store at the x0  but not happend:
+//              
+//              p.im.imem[0] = {7'h0   , 5'd1  , 5'd0 , 3'b0  , 5'd0 , 7'b0110011  } ;
+//            $display("the final output in the reg no  %d is %d " , 1 ,p.R.R[0]);
+
+
+        // New test :
+
+
+//        p.R.R[1] = 32'd10;
+//        p.DM.mem[30] = 250 ;
+//        p.R.R[21]= 32'd10;
+//        p.R.R[22] = 32'd2;
+//
+//        //  store and load test : 
+//        
+//        p.im.imem[0] = {12'd20 , 5'd1 , 3'b0 , 5'd7 , 7'b0010011  } ;
+//        p.im.imem[1] = {12'd0 , 5'd7 , 3'b0 , 5'd5 , 7'b0000011  } ;
+//
+//
+//
+//
+//    #170
+//            $display("the final output in the reg no  %d is %d " , 1 ,p.R.R[1]); 
+//            $display("the final output in the reg no  %d is %d " , 2 ,p.R.R[7]);
