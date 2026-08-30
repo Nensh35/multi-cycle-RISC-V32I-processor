@@ -26,15 +26,14 @@ For FPGA verification, two additions were made on top of the core simulation arc
 
 - LD (Load) State: Fires once, immediately after reset, to load the test program directly into the physical Instruction Memory (IMEM) on hardware. This was necessary because, unlike simulation, real hardware has no testbench to inject instructions — the program has to be written into IMEM on-chip before execution begins. It is a one-time bootstrap step, not part of the recurring execution cycle, which remains FETCH → DECODE → EXECUTE → MEMORY → WRITEBACK.
 
-- HLT Instruction: A dedicated halt instruction (Opcode: 7'h7F) added to cleanly stop processor execution once a program finishes running on hardware, useful for holding final register/output values steady for observation on LEDs.
+- HLT Instruction: A dedicated halt instruction (Opcode: 7'h7F)(IR Will be 32'h0000007F) added to cleanly stop processor execution once a program finishes running on hardware, useful for holding final register/output values steady for observation on LEDs.
 
 🖥️ FPGA Hardware Verification
 
 - Board: RealDigital Boolean FPGA board (AMD)
 - Toolchain: Xilinx Vivado
 - Clocking: Board supplies a 100MHz master clock (mclk), internally divided down to 25MHz to close timing and meet constraints
-- Output: Final register value driven out to on-board LEDs
-- Demo: Factorial(8) executed live on hardware, verified via LED output (see demo video)
+- Output: Final register value driven out to on-board LEDs 
 - Simulation tool used for RTL verification: Icarus Verilog & GTKWave
 
 Going from simulation to hardware surfaced real-world issues that simulation alone doesn't catch — including timing violations that required the clock division above, and the need for on-chip instruction loading (LD) since there's no testbench on real silicon.
@@ -131,7 +130,7 @@ Base Opcode: 1100011
 
 [7] Hardware Control Instruction
 
-- HLT -> Opcode: 7'h7F | Halts processor execution (used for FPGA bring-up/testing)
+- HLT -> Opcode: 7'h7F | IR : 32'h0000007F | Halts processor execution (used for FPGA bring-up/testing)
 
 ** Hardware Modules & Components
 
