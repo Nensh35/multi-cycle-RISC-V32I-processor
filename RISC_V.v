@@ -1,5 +1,8 @@
 //  This is the final Top module ::
+/*changes are made to verify on FPGA like add one more state LD to lead the data 
+  the out is connect to physical  16 LED of boolean board of AMD! 
 
+*/
 `include "IM.v"
 `include "IFU.v"
 `include "IDU.v"
@@ -11,12 +14,34 @@
 
 module RISC_V(
     
-    input clk , reset
+    input mclk , reset , reset_clk,
+    output [15:0]out 
 
 );
-
+    
+   
 ///  now all the signal that are used:
+reg [1:0] counter;
+reg clk ;
 
+    always @(negedge mclk) begin
+        if (reset_clk) begin
+            counter   <= 2'b00;
+            clk <= 1'b0;
+        end
+        else begin
+            if (counter == 2'b01) begin
+                counter   <= 2'b00;
+                clk <= ~clk;
+            end
+            else begin
+                counter <= counter + 1'b1;
+            end
+        end
+    end
+wire HLT ;
+wire    [31:0]reg_1_data    ;
+wire    load_imem           ; //  for loading the instruction  in to the IMEM ;
 
 wire    [9:0] PC            ;
 wire    [31:0] IR           ;
@@ -59,18 +84,21 @@ wire          En_write      ;
 // now initiate the all the module 
 
 controller CONTRLR(clk , reset , PC , ALU_out , Branch_Taken , IR , MDR , Rs2_data , imm_I , imm_U ,
-        New_PC , En_IFU , En_IDU , En_IEX , En_write ,En_IM , Row_DM , type_DM , data_DM , RegWrite) ;
+        New_PC , En_IFU , En_IDU , En_IEX , En_write ,En_IM , Row_DM , type_DM , data_DM , RegWrite ,load_imem) ;
 
-ifu  IF(clk, En_IFU ,reset , Branch_Taken , New_PC ,PC) ;
+ifu  IF(clk, En_IFU ,reset , Branch_Taken , New_PC ,PC , HLT) ;
 
-instruction_memory im (clk , reset ,En_IM, Branch_Taken ,   PC , New_PC  , IR);
+instruction_memory im (clk , reset ,En_IM, Branch_Taken ,   PC , New_PC  , IR ,load_imem);
 
 idu DU (clk , En_IDU , reset , IR , Funct3 , OpCode , Rd , Rs1 , Rs2 , Funct7 , imm_I , imm_U ) ;
 
-iex EX (clk , En_IEX , reset , Funct3 , OpCode , Rs1_data , Rs2_data , Funct7 , imm_I , imm_U , ALU_out , Branch_Taken) ;
 
-registers R (clk, reset , RegWrite , Rs1 , Rs2 , Rd ,  data_DM , Rs1_data , Rs2_data ) ;
+iex EX (clk , En_IEX , reset , Funct3 , OpCode , Rs1_data , Rs2_data , Funct7 , imm_I , imm_U , ALU_out , Branch_Taken , HLT ) ;
+
+registers R (clk, reset , RegWrite , Rs1 , Rs2 , Rd ,  data_DM , Rs1_data , Rs2_data ,reg_1_data ) ;
 
 data_mem DM (clk , reset , Row_DM , type_DM , data_DM , En_write , MDR ) ;
 
+ assign out  =reg_1_data[15:0] ; 
+ //reg_1_data[15:0] ;
 endmodule
