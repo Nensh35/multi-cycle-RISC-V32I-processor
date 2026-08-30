@@ -2,32 +2,48 @@
 
 📌 Project Overview
 
-This project is a fully functional,  32-bit RISC-V Processor implementing the RV32I Base Integer Instruction Set. It is designed using a Multi-Cycle Finite State Machine (FSM) architecture rather than a single-cycle datapath, making it highly resource-efficient and realistic to how actual hardware schedules execution.
+This project is a fully functional, 32-bit RISC-V Processor implementing the RV32I Base Integer Instruction Set. It is designed using a Multi-Cycle Finite State Machine (FSM) architecture rather than a single-cycle datapath, making it highly resource-efficient and realistic to how actual hardware schedules execution.
 
-The processor is built with modularity in mind, tested with raw machine code (including factorial and arithmetic shift edge-cases)
+The processor is built with modularity in mind, tested with raw machine code (including factorial and arithmetic shift edge-cases), and has been verified both in simulation and on real FPGA hardware.
 
 ⚙️ How It Works (The Execution Flow)
-The processor is governed by a central FSM Controller.v which dictates the flow of data through the datapath over multiple clock cycles. The states are:
 
-1.FETCH: The FSM commands the Instruction Fetch Unit to pull the 32-bit instruction from instruction memory using the Program Counter (PC).
+The processor is governed by a central FSM Controller.v which dictates the flow of data through the datapath over multiple clock cycles. The core states are:
 
-2.DECODE: The Instruction Decode Unit acts as a wire-splitter, routing rs1, rs2, and rd addresses and mapping the immediate values based on the instruction type.
+1. FETCH: The FSM commands the Instruction Fetch Unit to pull the 32-bit instruction from instruction memory using the Program Counter (PC).
 
-3.EXECUTE: The Execution Unit (containing the ALU) performs mathematical, logical, and shift operations (sll, srl, sra). Branch targets are calculated here.
+2. DECODE: The Instruction Decode Unit acts as a wire-splitter, routing rs1, rs2, and rd addresses and mapping the immediate values based on the instruction type.
 
-4.MEMORY: Handles reading from or writing to Data Memory (lw, sw). 
+3. EXECUTE: The Execution Unit (containing the ALU) performs mathematical, logical, and shift operations (sll, srl, sra). Branch targets are calculated here.
 
-5.WRITEBACK: A top-level multiplexer controlled by the FSM routes the final data (from the ALU, Memory, or PC+1) back into the Register File.
+4. MEMORY: Handles reading from or writing to Data Memory (lw, sw).
 
-for FPGA verification purpose  I added one more stage Name as LD to load instructions into physical Instruction memory   and also added one more instructions  name as HLT  to stop execution  processor 
-Opcode of HLT IS 7'h7F
+5. WRITEBACK: A top-level multiplexer controlled by the FSM routes the final data (from the ALU, Memory, or PC+1) back into the Register File.
 
+🔧 FPGA Bring-Up: LD State & HLT Instruction
+
+For FPGA verification, two additions were made on top of the core simulation architecture:
+
+- LD (Load) State: Fires once, immediately after reset, to load the test program directly into the physical Instruction Memory (IMEM) on hardware. This was necessary because, unlike simulation, real hardware has no testbench to inject instructions — the program has to be written into IMEM on-chip before execution begins. It is a one-time bootstrap step, not part of the recurring execution cycle, which remains FETCH → DECODE → EXECUTE → MEMORY → WRITEBACK.
+
+- HLT Instruction: A dedicated halt instruction (Opcode: 7'h7F) added to cleanly stop processor execution once a program finishes running on hardware, useful for holding final register/output values steady for observation on LEDs.
+
+🖥️ FPGA Hardware Verification
+
+- Board: RealDigital Boolean FPGA board (AMD)
+- Toolchain: Xilinx Vivado
+- Clocking: Board supplies a 100MHz master clock (mclk), internally divided down to 25MHz to close timing and meet constraints
+- Output: Final register value driven out to on-board LEDs
+- Demo: Factorial(8) executed live on hardware, verified via LED output (see demo video)
+- Simulation tool used for RTL verification: Icarus Verilog & GTKWave
+
+Going from simulation to hardware surfaced real-world issues that simulation alone doesn't catch — including timing violations that required the clock division above, and the need for on-chip instruction loading (LD) since there's no testbench on real silicon.
 
 📜 Supported Instruction Set (RV32I)
-The processor supports the 6 core RISC-V instruction formats.
+
+The processor supports the 6 core RISC-V instruction formats, plus a hardware-specific HLT instruction.
 
 Implemented Instructions & Opcodes (RV32I Base)
-
 
 [1] R-Type Instructions (Register Math & Logic)
 Format: Funct7(7) | Rs2(5) | Rs1(5) | Funct3(3) | Rd(5) | Opcode(7)
@@ -35,15 +51,15 @@ Base Opcode: 0110011
 
 =======================================================
 
-* ADD  -> Funct3: 000 | Funct7: 0000000 | rd = rs1 + rs2
-* SUB  -> Funct3: 000 | Funct7: 0100000 | rd = rs1 - rs2
-* SLL  -> Funct3: 001 | Funct7: 0000000 | rd = rs1 << rs2 (Logical Shift)
-* SLT  -> Funct3: 010 | Funct7: 0000000 | rd = (rs1 < rs2) ? 1 : 0 (Signed)
-* XOR  -> Funct3: 100 | Funct7: 0000000 | rd = rs1 ^ rs2
-* SRL  -> Funct3: 101 | Funct7: 0000000 | rd = rs1 >> rs2 (Logical Shift)
-* SRA  -> Funct3: 101 | Funct7: 0100000 | rd = rs1 >>> rs2 (Arithmetic Shift)
-* OR   -> Funct3: 110 | Funct7: 0000000 | rd = rs1 | rs2
-* AND  -> Funct3: 111 | Funct7: 0000000 | rd = rs1 & rs2
+- ADD -> Funct3: 000 | Funct7: 0000000 | rd = rs1 + rs2
+- SUB -> Funct3: 000 | Funct7: 0100000 | rd = rs1 - rs2
+- SLL -> Funct3: 001 | Funct7: 0000000 | rd = rs1 << rs2 (Logical Shift)
+- SLT -> Funct3: 010 | Funct7: 0000000 | rd = (rs1 < rs2) ? 1 : 0 (Signed)
+- XOR -> Funct3: 100 | Funct7: 0000000 | rd = rs1 ^ rs2
+- SRL -> Funct3: 101 | Funct7: 0000000 | rd = rs1 >> rs2 (Logical Shift)
+- SRA -> Funct3: 101 | Funct7: 0100000 | rd = rs1 >>> rs2 (Arithmetic Shift)
+- OR -> Funct3: 110 | Funct7: 0000000 | rd = rs1 | rs2
+- AND -> Funct3: 111 | Funct7: 0000000 | rd = rs1 & rs2
 
 =======================================================
 
@@ -53,13 +69,13 @@ Base Opcode: 0010011
 
 =======================================================
 
-* ADDI  -> Funct3: 000 | rd = rs1 + imm
-* SLTI  -> Funct3: 010 | rd = (rs1 < imm) ? 1 : 0 (Signed)
-* XORI  -> Funct3: 100 | rd = rs1 ^ imm
-* ORI   -> Funct3: 110 | rd = rs1 | imm
-* ANDI  -> Funct3: 111 | rd = rs1 & imm
-* SLLI  -> Funct3: 001 | Funct7: 0000000 | Shift Left Logical Imm
-* SRLI  -> Funct3: 101 | Funct7: 0000000 | Shift Right Logical Imm
+- ADDI -> Funct3: 000 | rd = rs1 + imm
+- SLTI -> Funct3: 010 | rd = (rs1 < imm) ? 1 : 0 (Signed)
+- XORI -> Funct3: 100 | rd = rs1 ^ imm
+- ORI -> Funct3: 110 | rd = rs1 | imm
+- ANDI -> Funct3: 111 | rd = rs1 & imm
+- SLLI -> Funct3: 001 | Funct7: 0000000 | Shift Left Logical Imm
+- SRLI -> Funct3: 101 | Funct7: 0000000 | Shift Right Logical Imm
 
 =======================================================
 
@@ -69,11 +85,11 @@ Base Opcode: 0000011
 
 =======================================================
 
-* LB  -> Funct3: 000 | Load Byte (Sign-Extended)
-* LH  -> Funct3: 001 | Load Halfword (Sign-Extended)
-* LW  -> Funct3: 010 | Load Word
-* LBU -> Funct3: 100 | Load Byte (Zero-Extended)
-* LHU -> Funct3: 101 | Load Halfword (Zero-Extended)
+- LB -> Funct3: 000 | Load Byte (Sign-Extended)
+- LH -> Funct3: 001 | Load Halfword (Sign-Extended)
+- LW -> Funct3: 010 | Load Word
+- LBU -> Funct3: 100 | Load Byte (Zero-Extended)
+- LHU -> Funct3: 101 | Load Halfword (Zero-Extended)
 
 =======================================================
 
@@ -83,9 +99,9 @@ Base Opcode: 0100011
 
 =======================================================
 
-* SB -> Funct3: 000 | Store Byte
-* SH -> Funct3: 001 | Store Halfword
-* SW -> Funct3: 010 | Store Word
+- SB -> Funct3: 000 | Store Byte
+- SH -> Funct3: 001 | Store Halfword
+- SW -> Funct3: 010 | Store Word
 
 =======================================================
 
@@ -95,10 +111,10 @@ Base Opcode: 1100011
 
 =======================================================
 
-* BEQ  -> Funct3: 000 | Branch if rs1 == rs2
-* BNE  -> Funct3: 001 | Branch if rs1 != rs2
-* BLT  -> Funct3: 100 | Branch if rs1 < rs2 (Signed)
-* BGE  -> Funct3: 101 | Branch if rs1 >= rs2 (Signed)
+- BEQ -> Funct3: 000 | Branch if rs1 == rs2
+- BNE -> Funct3: 001 | Branch if rs1 != rs2
+- BLT -> Funct3: 100 | Branch if rs1 < rs2 (Signed)
+- BGE -> Funct3: 101 | Branch if rs1 >= rs2 (Signed)
 
 =======================================================
 
@@ -106,22 +122,28 @@ Base Opcode: 1100011
 
 =======================================================
 
-* LUI   -> Type: U | Opcode: 0110111 | Load Upper Immediate
-* AUIPC -> Type: U | Opcode: 0010111 | Add Upper Immediate to PC
-* JAL   -> Type: J | Opcode: 1101111 | Jump and Link
-* JALR  -> Type: I | Opcode: 1100111 | Funct3: 000 | Jump and Link Register
+- LUI -> Type: U | Opcode: 0110111 | Load Upper Immediate
+- AUIPC -> Type: U | Opcode: 0010111 | Add Upper Immediate to PC
+- JAL -> Type: J | Opcode: 1101111 | Jump and Link
+- JALR -> Type: I | Opcode: 1100111 | Funct3: 000 | Jump and Link Register
+
+=======================================================
+
+[7] Hardware Control Instruction
+
+- HLT -> Opcode: 7'h7F | Halts processor execution (used for FPGA bring-up/testing)
 
 ** Hardware Modules & Components
 
-The processor is  modular to reflect standard VLSI design practices. Below is the breakdown of the Verilog files and their specific responsibilities:
+The processor is modular to reflect standard VLSI design practices. Below is the breakdown of the Verilog files and their specific responsibilities:
 
-RISC_V.v (Top-Level Wrapper): The main file that instantiates all other modules and wires them together. It contains the top-level multiplexer for Writeback routing.
+RISC_V.v (Top-Level Wrapper): The main file that instantiates all other modules and wires them together. It contains the top-level multiplexer for Writeback routing, and on FPGA builds, drives the final register value out to on-board LEDs.
 
-Controller.v (The FSM Brain): Generates all control signals (Write Enables, Memory Read/Write, ALU Select Lines). It dictates which state the processor is currently in and skips unnecessary states (like skipping Memory/Writeback during a Branch).
+Controller.v (The FSM Brain): Generates all control signals (Write Enables, Memory Read/Write, ALU Select Lines). It dictates which state the processor is currently in, skips unnecessary states (like skipping Memory/Writeback during a Branch), and on FPGA builds includes the one-time LD state for hardware instruction loading.
 
 IFU.v (Instruction Fetch Unit): Manages the Program Counter (PC). It calculates PC + 4 natively and handles overriding the PC when the Controller signals a Jump or taken Branch.
 
-IM.v (Instruction Memory): A 32-bit wide logical memory block containing the assembled machine code.[1KiB]
+IM.v (Instruction Memory): A 32-bit wide logical memory block containing the assembled machine code. [1KiB]
 
 IDU.v (Instruction Decode Unit): Purely combinational logic that slices the 32-bit Instruction Register (IR) into standard RISC-V fields (rs1, rs2, rd, opcode, etc.). It also houses the ImmGen which correctly pieces together and immediate values.
 
@@ -129,15 +151,16 @@ REG_bank.v / registers.v (Register File): Contains thirty-two 32-bit flip-flop r
 
 IEX.v (Instruction Execute Unit): The execution wrapper. It receives data from the Register File and immediate values, routing them appropriately to the ALU. It also houses the dedicated adder for calculating relative branch targets.
 
-ALU.v (Arithmetic Logic Unit): The mathematical core. Utilizes a 4-bit select line to perform all required RV32I computations. .
+ALU.v (Arithmetic Logic Unit): The mathematical core. Utilizes a 4-bit select line to perform all required RV32I computations.
 
 Data_Memory.v / DM.v (Data RAM): Byte-addressable read/write memory. It utilizes ternary operators and bit-slicing to output proper word, halfword, and byte lengths, applying zeros or sign-bits depending on the specific load instruction.
 
 tb.v (Testbench): Contains bare-metal machine code arrays injected into Instruction Memory to verify mathematical loops (e.g., Factorial calculation).
 
+constraints.xdc: Pin mapping and timing constraints for the RealDigital Boolean FPGA board, including the 100MHz master clock definition used by Vivado for timing closure.
 
-simulation tool used is icarus verilog & GTK wave 
+🛠️ Tools Used
 
-FPGA  board used is Boolean board of realdigital and  tool for implementation is Vivado
-
-     
+- Simulation: Icarus Verilog & GTKWave
+- FPGA Implementation: Xilinx Vivado
+- FPGA Board: RealDigital Boolean Board (AMD)
