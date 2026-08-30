@@ -138,6 +138,6 @@ tb.v (Testbench): Contains bare-metal machine code arrays injected into Instruct
 
 simulation tool used is icarus verilog & GTK wave 
 
-FPGA  board used is Boolean board of realdigital and  tool for implementation of Vivado
+FPGA  board used is Boolean board of realdigital and  tool for implementation is Vivado
 
      
