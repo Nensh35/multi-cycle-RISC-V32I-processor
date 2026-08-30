@@ -19,7 +19,7 @@ The processor is governed by a central FSM Controller.v which dictates the flow 
 
 5.WRITEBACK: A top-level multiplexer controlled by the FSM routes the final data (from the ALU, Memory, or PC+1) back into the Register File.
 
-for FPGA verification purpose  I added one more stage Name as LD to load data into physical Instruction memory   and also added one more instructions  name as HLT  to stop execution  processor 
+for FPGA verification purpose  I added one more stage Name as LD to load instructions into physical Instruction memory   and also added one more instructions  name as HLT  to stop execution  processor 
 Opcode of HLT IS 7'h7F
 
 
