@@ -1,8 +1,8 @@
-
 module ifu(
     input clk, En_IFU , reset , Branch_Taken ,
     input [9:0] New_PC ,
-    output reg [9:0] PC    
+    output reg [9:0] PC ,
+    input HLT   
 );
 
 always @(negedge clk) begin
@@ -12,6 +12,8 @@ always @(negedge clk) begin
         PC <= 0 ;
 
     end
+
+    if(HLT) begin PC <= 10'bx ; end
 
     
     else if(En_IFU) begin
