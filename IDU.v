@@ -1,3 +1,5 @@
+        
+
 module idu(
     input clk, En_IDU , reset,
     input [31:0] IR ,
@@ -16,6 +18,14 @@ always @(negedge clk) begin
     if(En_IDU & (~reset)) begin 
 
     case(IR[6:0])
+
+
+        //HLT instruction new added for the verification :
+        7'h7F : begin
+                    
+                    OpCode <= 7'h7F ;
+
+                    end
 
         7'b0110011 : begin ///  this is R type 
 
@@ -107,11 +117,6 @@ always @(negedge clk) begin
 
 endmodule 
 
-
-
-
-
-        
 
 
         
