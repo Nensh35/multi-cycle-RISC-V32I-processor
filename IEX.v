@@ -10,7 +10,8 @@ module iex(
     input   [11:0] imm_I ,
     input   [19:0] imm_U ,
     output  [31:0] ALU_out,
-    output  Branch_Taken
+    output  Branch_Taken  ,
+    output  HLT 
 
 );
 
@@ -22,10 +23,10 @@ reg [31:0]    A  ;
 reg [31:0]    B  ;
 wire flag        ; /// it will goes to the ALU for the B type
 reg  Branch_Taken_2 ; // it is for the J type as in the j type we do not need to chek any conditon;
-
+reg HLT_2 ; 
 assign Branch_Taken = flag ? 1 : Branch_Taken_2 ;
 
-
+assign HLT  = HLT_2 ;
 
 
 always @(negedge clk) begin
@@ -33,6 +34,11 @@ always @(negedge clk) begin
     if(En_IEX & (~reset)) begin
 
     case(OpCode)
+
+        7'h7F : begin
+                    HLT_2 <= 1 ;
+                    end
+
 
         7'b0110011 : begin  // R type so A is Rs1 and B is Rs2 only
                 A       <= Rs1 ;
@@ -100,7 +106,7 @@ always @(negedge clk) begin
 
                     end
                 
-                default : sel <= 4'bx ;
+                default :  sel <= 4'bx ; 
 
                 endcase
 
@@ -245,7 +251,7 @@ always @(negedge clk) begin
             end   /// note for that opration 0010111 PC+ alu out 
 
         
-        default : sel <= 4'bx ;
+        default : begin sel <= 4'bx ; HLT_2 <= 0 ; end
 
         endcase
 
@@ -255,4 +261,5 @@ always @(negedge clk) begin
     /// ALU initiated
     alu a1 (A , B , sel , ALU_out , flag ) ;
 
+    
 endmodule
