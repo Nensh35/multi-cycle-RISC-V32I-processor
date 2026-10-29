@@ -2,9 +2,9 @@
 
 📌 Project Overview
 
-This project is a fully functional, 32-bit RISC-V Processor implementing the RV32I Base Integer Instruction Set. It is designed using a Multi-Cycle Finite State Machine (FSM) architecture rather than a single-cycle datapath, making it highly resource-efficient and realistic to how actual hardware schedules execution.
+This project is a fully functional, 32-bit RISC-V Processor implementing the RV32I Base Integer Instruction Set. It is designed using a Multi-Cycle Finite State Machine (FSM) architecture rather than a single-cycle datapath, making it  resource-efficient and realistic to how actual hardware schedules execution.
 
-The processor is built with modularity in mind, tested with raw machine code (including factorial and arithmetic shift edge-cases), and has been verified both in simulation and on real FPGA hardware.
+The processor is built with modularity in mind, tested with raw machine code (including factorial and arithmetic shift cases), and has been verified both in simulation and on real FPGA hardware(with limited tasting ).
 
 ⚙️ How It Works (The Execution Flow)
 
@@ -52,7 +52,7 @@ Base Opcode: 0110011
 
 - ADD -> Funct3: 000 | Funct7: 0000000 | rd = rs1 + rs2
 - SUB -> Funct3: 000 | Funct7: 0100000 | rd = rs1 - rs2
-- SLL -> Funct3: 001 | Funct7: 0000000 | rd = rs1 << rs2 (Logical Shift)
+- SLL -> Funct3: 001 | Funct7: 0000000 | rd = rs1 << rs2 (Logical Shift and the arithmetic are same !)
 - SLT -> Funct3: 010 | Funct7: 0000000 | rd = (rs1 < rs2) ? 1 : 0 (Signed)
 - XOR -> Funct3: 100 | Funct7: 0000000 | rd = rs1 ^ rs2
 - SRL -> Funct3: 101 | Funct7: 0000000 | rd = rs1 >> rs2 (Logical Shift)
@@ -138,13 +138,13 @@ The processor is modular to reflect standard VLSI design practices. Below is the
 
 RISC_V.v (Top-Level Wrapper): The main file that instantiates all other modules and wires them together. It contains the top-level multiplexer for Writeback routing, and on FPGA builds, drives the final register value out to on-board LEDs.
 
-Controller.v (The FSM Brain): Generates all control signals (Write Enables, Memory Read/Write, ALU Select Lines). It dictates which state the processor is currently in, skips unnecessary states (like skipping Memory/Writeback during a Branch), and on FPGA builds includes the one-time LD state for hardware instruction loading.
+Controller.v (The FSM Brain): Generates all control signals (Write Enables, Memory Read/Write, ALU Select Lines). It dictates which state the processor is currently in and on FPGA builds includes the one-time LD state for hardware instruction loading.
 
-IFU.v (Instruction Fetch Unit): Manages the Program Counter (PC). It calculates PC + 4 natively and handles overriding the PC when the Controller signals a Jump or taken Branch.
+IFU.v (Instruction Fetch Unit): Manages the Program Counter (PC). It calculates PC + 1 natively and handles overriding the PC when the Controller signals a Jump or taken Branch.
 
-IM.v (Instruction Memory): A 32-bit wide logical memory block containing the assembled machine code. [1KiB]
+IM.v (Instruction Memory): A 32-bit wide logical memory block containing the assembled machine code. [1Ki*4B]
 
-IDU.v (Instruction Decode Unit): Purely combinational logic that slices the 32-bit Instruction Register (IR) into standard RISC-V fields (rs1, rs2, rd, opcode, etc.). It also houses the ImmGen which correctly pieces together and immediate values.
+IDU.v (Instruction Decode Unit):  that slices the 32-bit Instruction Register (IR) into standard RISC-V fields (rs1, rs2, rd, opcode, etc.). It also houses the ImmGen which correctly pieces together and immediate values.
 
 REG_bank.v / registers.v (Register File): Contains thirty-two 32-bit flip-flop registers. Includes combinational asynchronous reads, synchronous writes, and a hardwired 0 at index x0.
 
